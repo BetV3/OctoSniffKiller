@@ -11,6 +11,7 @@ import argparse
 import interfaces as inter
 import macAddress as mac
 import pinger as ping
+import devices
 import socket
 import time
 
@@ -30,9 +31,12 @@ net = '{}/{}'.format(ipAddr, netmask_bits)
 network = IPNetwork(net)
 target = '{}/{}'.format(network.network, netmask_bits)
 clients = mac.get_mac(target)
+if clients == 0:
+    print('The network interface you choose has no connected devices. Are you hard wired into your console? y/n')
+else:
+    print('You chose the interface with MAC Address of {} and LAN IP of {}'.format(macAddr, ipAddr))
 print('You have {} clients'.format(len(clients)))
 count = 1
-
 for client in clients:
     vendor = mac.get_vendors(client['mac'])
     if vendor == None:
@@ -44,12 +48,8 @@ for client in clients:
     print(str(vendor)+ ' -> {}'.format(client['ip']))
     count = count + 1
     time.sleep(1)
-print('You chose the interface with MAC Address of {} and LAN IP of {}'.format(macAddr, ipAddr))
-router = int(input('Please select what Client number your router is: \n')) - 1
-router = clients[router]
-print('You chose {} as your router, is this correct?'.format(router))
-print(router)
-device = int(input('Please select what Client number your console is: \n')) - 1
-device = clients[device]
-print('You chose {} as your console, is this correct?'.format(device))
-print(device)
+router = devices.choose_router(clients)
+console = devices.choose_console(clients)
+
+
+
